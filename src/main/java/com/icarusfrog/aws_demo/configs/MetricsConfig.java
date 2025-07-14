@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 
+import java.time.Duration;
+import java.util.Map;
+
 @Slf4j
 @Configuration
 public class MetricsConfig {
@@ -26,6 +29,23 @@ public class MetricsConfig {
     @Bean
     public MeterRegistry cloudWatchMeterRegistry(CloudWatchConfig cwc) {
         return new CloudWatchMeterRegistry(cwc, Clock.SYSTEM, CloudWatchAsyncClient.create());
+    }
+
+    @Profile("aws")
+    @Bean
+    public CloudWatchConfig cloudWatchConfig() {
+        CloudWatchConfig cwc = new CloudWatchConfig() {
+            private Map<String, String> config = Map.of(
+                    "cloudwatch.namespace", "awsDemo",
+                    "cloudwatch.step", Duration.ofMinutes(1L).toString()
+            );
+            @Override
+            public String get(String key) {
+                return config.get(key);
+            }
+        };
+        log.debug("Excecuting with cloudwatch config: {}", cwc);
+        return cwc;
     }
 
     @Bean
