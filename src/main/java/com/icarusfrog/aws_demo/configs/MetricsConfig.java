@@ -44,7 +44,7 @@ public class MetricsConfig {
                 return config.get(key);
             }
         };
-        log.debug("Excecuting with cloudwatch config: {}", cwc);
+        log.debug("Executing with cloudwatch config: {}", cwc);
         return cwc;
     }
 
